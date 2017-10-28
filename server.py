@@ -4,9 +4,12 @@ import time
 from ClientThread import ClientThread
 import random
 from SocketServer import ThreadingMixIn
+from ServerThread import ServerThread
 
 TCP_IP = "localhost"
 TCP_PORT = 9000 + int(random.random()*1000)
+
+
 
 def server():
 	# create a socket object
@@ -14,9 +17,9 @@ def server():
 		        socket.AF_INET, socket.SOCK_STREAM) 
 	serversocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 	# get local machine name
-	host = TCP_IP                          
+	host = "localhost"                          
 
-	port = TCP_PORT                                           
+	port = 9000 + int(random.random()*1000)                                           
 
 	# bind to the port
 	serversocket.bind((host, port))                                  
@@ -36,6 +39,9 @@ def server():
 		t.join()	    
 
 
+
+
+
 def client():
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
 
@@ -51,13 +57,18 @@ def client():
 	tm = s.recv(1024)                                     
 	m = str(raw_input())
 	s.send(m)
+	Sthread = ServerThread(server)
+	Sthread.start()
 	s.close()
 	print("The time got from the server is %s" % tm.decode('ascii'))
+	Sthread.join()
 
-print "Enter your choice:"
-print "1.Server\n2.Client"
-choice = int(raw_input())
-if choice == 1:
-	server()
-elif choice == 2:
-	client()
+
+if __name__ == "__main__":
+	print "Enter your choice:"
+	print "1.Server\n2.Client"
+	choice = int(raw_input())
+	if choice == 1:
+		server()
+	elif choice == 2:
+		client()
